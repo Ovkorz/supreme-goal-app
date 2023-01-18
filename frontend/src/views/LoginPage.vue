@@ -34,29 +34,64 @@
           </ion-list>
 
           <ion-label> just to check: {{ username }} </ion-label>
-            
+          <br><br>
+          
+          <ion-button @click="() => {attemptLogIn()}"> Log in </ion-button>
+          <br><br>
+          
+          <ion-label> {{ specialMessage }} </ion-label>
+          
         </div>
       </ion-content>
     </ion-page>
   </template>
 
 <script lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonList, IonItem, IonButtons, IonBackButton } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonLabel, IonInput, IonList, IonItem, IonButtons, IonButton, IonBackButton } from '@ionic/vue';
 import { defineComponent } from 'vue';
+import { mapState } from 'pinia'
 
-export default{
+import { useGlobalAuthToken } from '@/stores/authToken';
+
+export default defineComponent({
   components:{
-    IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonInput, IonButtons, IonBackButton
+    IonContent, IonHeader, IonPage, IonTitle, IonList, IonLabel, IonItem, IonToolbar, IonInput, IonButtons, IonButton, IonBackButton, 
   },
   data(){
+    // const used_router = useRouter();
+
     return{
       username: "simon",
       password: "123",
       remember: true,
+      specialMessage: "",
+      // router: used_router,
     }
   },
+  computed:{
+    ...mapState(useGlobalAuthToken, {
+      isLoggedIn: 'success',
+    }),
+    // ...mapWritableState(useGlobalAuthToken, ['success','token','username']),
+  },
+  methods:{
+    attemptLogIn(){
+      const authStore = useGlobalAuthToken()
+      const token = authStore.logIn(this.username, this.password)
+      console.log(token)
 
-}
+      if(this.isLoggedIn){
+        this.specialMessage = "unable to log in :/"
+
+        
+        this.$router.push("/list")
+      }
+      else {
+        this.specialMessage = "unable to log in :/"
+      }
+    }
+  },
+})
 </script>
 
 <style scoped>
@@ -79,7 +114,7 @@ export default{
   font-size: 16px;
   line-height: 22px;
   
-  color: #8c8c8c;
+  color: #c3a6a6;
   
   margin: 0;
 }
