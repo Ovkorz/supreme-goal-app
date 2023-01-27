@@ -3,7 +3,7 @@
       <ion-header :translucent="true">
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button default-href="/home"></ion-back-button>
+            <ion-back-button default-href="/login"></ion-back-button>
           </ion-buttons>
           <ion-title>Log-in</ion-title>
         </ion-toolbar>
@@ -18,7 +18,7 @@
   
         <div id="container">
           <div id="login-form">
-            <strong>Login to your account:</strong>
+            <strong>Create new account:</strong>
             
             <ion-list>
 
@@ -29,17 +29,16 @@
 
                 <ion-item>
                   <ion-label position="stacked">Password</ion-label>
-                  <ion-input name="password-input" v-model="password" type="password" placeholder="********"></ion-input>
+                  <ion-input name="password-input" v-model="password" type="password"></ion-input>
                 </ion-item>
 
             </ion-list>
 
             <br><br>
             
-            <ion-button @click="() => {attemptLogIn()}"> Log in </ion-button>
+            <ion-button @click="() => {attemptSignUp()}"> Sign Up </ion-button>
             <br><br>
-            <a @click="$router.push('/signup')" class="ion-padding" color="primary">Create account</a>
-
+            
           </div>
         </div>
       </ion-content>
@@ -48,13 +47,11 @@
 
 <script lang="ts">
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonLabel, IonInput,
-   IonList, IonItem, IonButtons, IonButton, IonBackButton, toastController, } from '@ionic/vue';
+   IonList, IonItem, IonButtons, IonButton, IonBackButton, toastController } from '@ionic/vue';
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia'
 
 import { useGlobalAuthToken } from '@/stores/authToken';
-
-import axios from 'axios';
 
 export default defineComponent({
   components:{
@@ -84,28 +81,24 @@ export default defineComponent({
     // ...mapWritableState(useGlobalAuthToken, ['success','token','username']),
   },
   methods:{
-    async attemptLogIn(){
+    async attemptSignUp(){
+
+      type apiResponse = {
+        status:number,
+      }
+
       const authStore = useGlobalAuthToken()
-      const token = await authStore.logIn(this.username, this.password)
-      console.log(token)
+      const resp:apiResponse = await authStore.createAccount(this.username, this.password)
+      console.log(resp)
 
-      if(this.isLoggedIn){
+      this.username=""
+      this.password=""
 
-        this.username =""
-        this.password=""
-        this.$router.push("/list")
-      }
-      else {
-        this.specialMessage = "unable to log in :/"
-      }
+      this.$router.back();
+      
+
     },
     
-  },
-  mounted(){
-    
-    axios.get('http://localhost:8000/hello').then(r =>{
-      console.log(r.data)
-    })
   },
 })
 </script>

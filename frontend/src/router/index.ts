@@ -4,6 +4,8 @@ import { RouteRecordRaw } from 'vue-router';
 import HomePage from '../views/HomePage.vue'
 import LoginPage from '@/views/LoginPage.vue'
 import ListPage from '@/views/ListPage.vue'
+import NewGoalPage from '@/views/NewGoalPage.vue'
+import CreateAccountPage from '@/views/CreateAccountPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -24,7 +26,17 @@ const routes: Array<RouteRecordRaw> = [
     path: '/list',
     name: 'Goal List',
     component: ListPage,
-  }
+  },
+  {
+    path: '/new',
+    name: 'New Goal',
+    component: NewGoalPage,
+  },
+  {
+    path: '/signup',
+    name: "create acount",
+    component: CreateAccountPage,
+  },
 ]
 
 const router = createRouter({

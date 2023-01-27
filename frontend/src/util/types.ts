@@ -1,24 +1,40 @@
 export class Goal { 
   name: string;
   description: string;
+  target: number;
   progress: number;
   id: number;
+  
+  done = 0;
 
-  constructor( n: string, desc = "", init_progr = 0, id = -1){
+  constructor( n: string, desc = "", t =1, d= 0, id = -1){
     this.name = n;
     this.description = desc;
-    this.progress = init_progr;
+    this.target = t;
+    this.done = d;
     this.id = id
+
+    this.progress = this.done / this.target;
   }
 
+  getProgress(){
+    this.progress = this.done / this.target;
+    return this.progress;
+  }
 }
 
-export class UserCredentials{
+export type UserCredentials = {
     username: string;
     password: string;
+    token: string;
+}
 
-    constructor(usrnm:string, pw:string){
-      this.username = usrnm
-      this.password = pw
-    }
+export type GoalData = {
+  id: number,
+  title:string,
+  description: string,
+
+  target:number,
+  amount_done: number,
+  created_by: number,
 }

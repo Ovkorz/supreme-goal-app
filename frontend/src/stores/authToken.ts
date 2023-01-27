@@ -1,10 +1,16 @@
 import { defineStore } from "pinia";
 
-import { useDummyServer } from "@/stores/dummyServer"
+import axios from 'axios'
+
 import { UserCredentials } from "@/util/types"
+import { useGoalStore } from "./goals";
+
+type apiResponse = {
+  status:number,
+}
 
 export const useGlobalAuthToken = defineStore({
-    id: 'authToken',
+    id: 'authStore',
     // state: () => { 
         
     //     useLocalStorage("globalAuthToken", {
@@ -19,6 +25,8 @@ export const useGlobalAuthToken = defineStore({
       username: "",
       token: "",
       success: false,
+      host_adress: "192.168.0.143",
+      connection: false,
     }),
     getters: {
       restAuthHeader(state){
@@ -43,6 +51,9 @@ export const useGlobalAuthToken = defineStore({
       }
     },
     actions:{
+      setHost(addr: string){
+        this.host_adress = addr;
+      },
         setToken(usrnm: string, tok: string){
 
             if(usrnm && tok){
@@ -57,20 +68,58 @@ export const useGlobalAuthToken = defineStore({
           this.username = ""
           this.token = ""
           this.success = false
+
+          const goalStore = useGoalStore()
+          goalStore.reset()
         },
-        logIn(usrnm: string, pw: string){
-            const requestBody = new UserCredentials (usrnm, pw)
+        async logIn(usrnm: string, pw: string){
+            const requestBody: UserCredentials = {
+              username: usrnm,
+              password: pw,
+              token: ""
+            }
 
-            const token = this.dummyCredentialsChecker(requestBody)
+            axios.post<UserCredentials>(`http://${this.host_adress}:8000/auth/`, requestBody).then( response =>{
 
-            this.setToken(usrnm,token)
-            return token
+              console.log(response)
+              
+              if(response.status == 200){
+                this.setToken(requestBody.username, response.data.token)
+                return response.data.token;
+              }
+            })
         },
-        dummyCredentialsChecker(body: UserCredentials){
-            const dserver = useDummyServer()
+        async createAccount(usrnm: string, pswd: string): Promise<apiResponse>{
+          console.log("Attempting sign up")
+          const user: UserCredentials = {
+            username: usrnm,
+            password: pswd,
+            token: "",
+          }
 
-            const token = dserver.getToken(body.username, body.password)
-            return token
+          axios.post<UserCredentials>(`http://${this.host_adress}:8000/goals/users/`, user).then(r =>{
+            console.log(r.data)
+            return r
+          })
+
+          return {
+            status: 201,
+          }
+        },
+        checkConnection(){
+          axios.get<string>(`http://${this.host_adress}:8000/hello`).then(r => {
+            console.log(r.data)
+    
+            if (r.status != 200){
+              return;
+            }
+    
+            if(r.data == "hello!"){
+              this.connection = true;
+            }
+            
+          })
         }
-    }
-  })
+
+  }
+})
