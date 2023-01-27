@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 class Goal(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False,)
-    description = models.CharField(max_length=300, blank=True, null=True),
+    description = models.CharField(max_length=100, blank=True, null=True)
     target = models.PositiveIntegerField(null=False, blank=False, default=1)
     amount_done = models.PositiveIntegerField()
 

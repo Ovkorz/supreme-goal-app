@@ -17,12 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from goals import urls as goalUrls
 
+from goals.views import greetView
+
 from rest_framework.authtoken import views as rest_auth_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('goals', include(goalUrls)),
-    path('auth/', rest_auth_views.obtain_auth_token, name='api-token-auth')
+    path('goals/', include(goalUrls)),
+    path('auth/', rest_auth_views.obtain_auth_token, name='api-token-auth'),
     # path('auth/', include('rest_framework.urls')),
+    path('hello', greetView.as_view()),
 ]

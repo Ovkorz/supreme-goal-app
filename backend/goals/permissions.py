@@ -14,3 +14,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Write permissions are only allowed to the owner of the snippet.
         return obj.created_by == request.user
+
+
+class AllowAnonCreateUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if view.action == 'create':
+            return True
+        return request.user and request.user.is_authenticated
